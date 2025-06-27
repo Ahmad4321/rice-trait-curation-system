@@ -8,8 +8,8 @@ Rice Trait Ontoloy provide the adverse information and evidence to support the t
 
 # Languages
 
-Python Django - 
-React # Frontend - Only Used javascript
+- Python Django -
+- React {Frontend - Only Used javascript}
 
 
 # Integration Tools
