@@ -1,0 +1,11 @@
+curation_system_trait
+curation_system_frontend--
+*.pyc
+
+*.log
+*.db
+*.egg-info
+RiceAlterome
+*.sqlite3
+ricetrait.db.sqlite3
+curation_system_frontend
