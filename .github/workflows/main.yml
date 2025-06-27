@@ -1,13 +1,37 @@
 name: Update File Tree
-on: push
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '!README.md'  # Avoid infinite loops
+
 jobs:
   generate-tree:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: |
-          sudo apt-get install tree
-          tree -L 3 --dirsfirst -I "node_modules|dist" >> README.md
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          commit_message: "docs: Update file tree in README"
+          fetch-depth: 0  # Needed for proper git history
+
+      - name: Setup Git identity
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Install tree and generate structure
+        run: |
+          sudo apt-get install -y tree
+          # Clear previous tree if exists
+          sed -i '/## Project Structure/,/```/{//!d}' README.md
+          # Add new tree
+          echo -e "\n## Project Structure\n\`\`\`" >> README.md
+          tree -L 3 --dirsfirst -I "node_modules|.git|dist" >> README.md
+          echo "\`\`\`" >> README.md
+
+      - name: Auto-commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: Update project file tree"
+          branch: ${{ github.ref_name }}
+          skip_fetch: true
