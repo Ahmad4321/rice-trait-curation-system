@@ -1,35 +1,48 @@
-name: Curation System
+name: Update Directory Tree
 on:
   push:
-    branches: [ main, master ]
-    paths:
-      - '!README.md'
+    branches: [main, master]
+    paths-ignore: ['README.md']
+
+# Critical permission setup
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  generate-tree:
+  update-tree:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout with PAT
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          persist-credentials: true
+          fetch-depth: 0
 
-      - name: Setup Git
+      - name: Setup Git and Tree
         run: |
+          # Configure Git
           git config --global user.name "Ahmad4321"
           git config --global user.email "ahmadjaved870@gmail.com"
+          
+          # Install tree command
+          sudo apt-get update && sudo apt-get install -y tree
 
-      - name: Generate tree
+      - name: Generate Updated Tree
         run: |
-          sudo apt-get install -y tree
-          # Clear previous tree section
-          sed -i '/## Project Structure/,/```/{//!d}' README.md
-          # Add new tree
-          echo -e "\n## Project Structure\n\`\`\`" >> README.md
-          tree -L 3 --dirsfirst -I "node_modules|.git|dist" >> README.md
-          echo "\`\`\`" >> README.md
+          # Create temporary file
+          tree -L 3 --dirsfirst -I "node_modules|.git|dist" > tmp_tree.txt
+          
+          # Update README between markers
+          awk -v tree="$(cat tmp_tree.txt)" '
+          /<!-- TREE START -->/ {print; print "```"; print tree; print "```"; skip=1}
+          /<!-- TREE END -->/ {skip=0}
+          !skip {print}
+          ' README.md > tmp_readme.md && mv tmp_readme.md README.md
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "docs: Update project tree"
+          commit_message: "docs: Auto-update directory tree"
           token: ${{ secrets.GH_PAT }}
+          branch: ${{ github.ref_name }}
