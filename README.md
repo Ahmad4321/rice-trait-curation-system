@@ -4,20 +4,7 @@ Rice Trait Ontoloy provide the adverse information and evidence to support the t
 
 # Project Structure
 
-
-curation_system/
-├── curation_system/
-│   ├── settings.py
-│   └── utils.js
-├── rice_trai_ontology/
-│   ├── view.py
-│   └── model.py
-│   └── urls.py
-├── Frontend-curation-system/
-│   ├── public
-│   └── src # contains components and routes
-├── README.md
-
+![App Screenshot](https://github.com/Ahmad4321/rice-trait-curation-system/blob/main/image.png?raw=true)
 
 # Languages
 
