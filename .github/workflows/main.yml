@@ -1,10 +1,10 @@
 name: Update Directory Tree
 on:
+  workflow_dispatch:  # Allows manual triggering
   push:
     branches: [main, master]
     paths-ignore: ['README.md']
 
-# Critical permission setup
 permissions:
   contents: write
   pull-requests: write
@@ -13,36 +13,35 @@ jobs:
   update-tree:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout with PAT
+      - name: Checkout repository (authenticated)
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Setup Git and Tree
+      - name: Setup Git environment
         run: |
-          # Configure Git
-          git config --global user.name "Ahmad4321"
-          git config --global user.email "ahmadjaved870@gmail.com"
-          
-          # Install tree command
-          sudo apt-get update && sudo apt-get install -y tree
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GH_PAT }} | base64)"
 
-      - name: Generate Updated Tree
+      - name: Install tree command
+        run: sudo apt-get update && sudo apt-get install -y tree
+
+      - name: Generate directory structure
         run: |
-          # Create temporary file
-          tree -L 3 --dirsfirst -I "node_modules|.git|dist" > tmp_tree.txt
-          
-          # Update README between markers
-          awk -v tree="$(cat tmp_tree.txt)" '
+          # Generate tree between markers
+          tree -L 3 --dirsfirst -I "node_modules|.git|dist|.github" > tree.txt
+          awk -v tree="$(cat tree.txt)" '
           /<!-- TREE START -->/ {print; print "```"; print tree; print "```"; skip=1}
           /<!-- TREE END -->/ {skip=0}
           !skip {print}
-          ' README.md > tmp_readme.md && mv tmp_readme.md README.md
+          ' README.md > README.tmp && mv README.tmp README.md
 
-      - name: Commit and Push Changes
+      - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "docs: Auto-update directory tree"
+          commit_message: "docs: Update directory tree structure"
           token: ${{ secrets.GH_PAT }}
           branch: ${{ github.ref_name }}
