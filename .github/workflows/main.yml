@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.Rice-Trait-curation }}
           persist-credentials: true
 
       - name: Setup Git
@@ -32,4 +32,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs: Update project tree"
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.Rice-Trait-curation }}
