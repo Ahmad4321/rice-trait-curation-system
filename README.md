@@ -1,5 +1,5 @@
 # rice-trait-curation-system
-Rice Trait Ontoloy provide the adverse information and evidence to support the term and trait
+Rice Trait Ontology provides the adverse information and evidence to support the term and trait
 
 
 # Project Structure
@@ -9,11 +9,11 @@ Rice Trait Ontoloy provide the adverse information and evidence to support the t
 # Languages
 
 - Python Django -
-- React {Frontend - Only Used javascript}
+- React {Frontend - Only Used JavaScript}
 
 
 # Integration Tools
 
 - Rice-ALterome
 - PubAnnotation
-- Large Langauge Model (KIMI and DeepSeek)
+- Large Language Model (KIMI and DeepSeek)
